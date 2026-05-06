@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -44,10 +44,7 @@
         <p class="text-xl md:text-2xl text-gray-300 mt-1 mb-4 font-light">
           (North Lake Processing Center)
         </p>
-        <div class="shock-number" id="detainee-number">
-          <!-- This number can be updated dynamically if needed -->
-          660
-        </div>
+        <div class="shock-number" id="detainee-number"></div>
         <p class="text-lg md:text-xl mt-4">Current Detainee Census</p>
         <p class="text-sm text-gray-400 mt-2">
           (Based on latest available data)
@@ -57,9 +54,9 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-6 py-12">
-      <!-- Monthly Census Table Section -->
+      <!--  Census Table Section -->
       <section id="census" class="mb-12">
-        <h2 class="text-3xl font-bold text-center mb-8">Monthly Census Data</h2>
+        <h2 class="text-3xl font-bold text-center mb-8">Census Data</h2>
         <div class="overflow-x-auto bg-white rounded-lg shadow">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -68,7 +65,7 @@
                   scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Month
+                  Census Date
                 </th>
                 <th
                   scope="col"
@@ -84,13 +81,10 @@
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr>
-                <td class="px-6 py-4 whitespace-nowrap">September 8, 2025</td>
-                <td class="px-6 py-4 whitespace-nowrap">660</td>
-                <td class="px-6 py-4 whitespace-nowrap text-green-600">-</td>
-              </tr>
-            </tbody>
+            <tbody
+              id="census-tbody"
+              class="bg-white divide-y divide-gray-200"
+            ></tbody>
           </table>
         </div>
         <p class="text-center text-sm text-gray-500 mt-4">
@@ -164,7 +158,8 @@
     <footer class="bg-gray-800 text-white text-center py-6 mt-12">
       <div class="container mx-auto px-6">
         <p>
-          &copy; 2025 Michigan Detention Awareness Project. All Rights Reserved.
+          &copy; <span id="copyright-year"></span> Michigan Detention Awareness
+          Project. All Rights Reserved.
         </p>
         <p class="text-sm text-gray-400 mt-2">
           Seeking transparency and accountability in ICE detentions in Michigan.
@@ -173,19 +168,82 @@
     </footer>
 
     <script>
-      // JavaScript to hide the census table if there are fewer than two data rows.
+      // -------------------------------------------------------
+      // CENSUS DATA — update this array to add new entries.
+      // Each entry: { date: "Month D, YYYY", count: number }
+      // -------------------------------------------------------
+      const censusData = [
+        { date: "September 8, 2025", count: 660 },
+        { date: "May 5, 2026", count: 992 },
+      ];
+      // -------------------------------------------------------
+
       document.addEventListener("DOMContentLoaded", function () {
-        const censusSection = document.getElementById("census");
-        const tableBody = censusSection.querySelector("tbody");
+        // Set copyright year
+        document.getElementById("copyright-year").textContent =
+          new Date().getFullYear();
 
-        // Check if the table body exists to prevent errors
-        if (tableBody) {
-          const rowCount = tableBody.getElementsByTagName("tr").length;
+        // Populate hero number with the most recent count
+        const latest = censusData[censusData.length - 1];
+        document.getElementById("detainee-number").textContent = latest.count;
 
-          // If there's only one row (or zero), hide the whole section.
-          if (rowCount < 1) {
-            censusSection.style.display = "none";
+        // Build census table rows (most recent first)
+        const PAGE_SIZE = 20;
+        const tbody = document.getElementById("census-tbody");
+        const reversed = censusData.slice().reverse();
+
+        function makeRow(entry, originalIndex) {
+          const prev = censusData[originalIndex - 1];
+          let changeText = "-";
+          let changeClass = "text-gray-500";
+          if (prev) {
+            const diff = entry.count - prev.count;
+            changeText = (diff > 0 ? "+" : "") + diff;
+            changeClass =
+              diff > 0
+                ? "text-red-600"
+                : diff < 0
+                  ? "text-green-600"
+                  : "text-gray-500";
           }
+          const tr = document.createElement("tr");
+          tr.innerHTML =
+            `<td class="px-6 py-4 whitespace-nowrap">${entry.date}</td>` +
+            `<td class="px-6 py-4 whitespace-nowrap">${entry.count}</td>` +
+            `<td class="px-6 py-4 whitespace-nowrap ${changeClass}">${changeText}</td>`;
+          return tr;
+        }
+
+        let shown = 0;
+
+        function showMore() {
+          const next = Math.min(shown + PAGE_SIZE, reversed.length);
+          for (let i = shown; i < next; i++) {
+            const originalIndex = censusData.length - 1 - i;
+            tbody.appendChild(makeRow(reversed[i], originalIndex));
+          }
+          shown = next;
+          if (shown >= reversed.length) {
+            const btn = document.getElementById("load-more-btn");
+            if (btn) btn.remove();
+          }
+        }
+
+        showMore();
+
+        if (reversed.length > PAGE_SIZE) {
+          const btn = document.createElement("button");
+          btn.id = "load-more-btn";
+          btn.textContent = "Show more";
+          btn.className =
+            "mt-4 mx-auto block bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-6 rounded-lg transition";
+          btn.addEventListener("click", showMore);
+          document.getElementById("census").appendChild(btn);
+        }
+
+        // Hide census section if empty
+        if (censusData.length < 1) {
+          document.getElementById("census").style.display = "none";
         }
       });
     </script>
