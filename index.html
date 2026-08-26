@@ -110,7 +110,70 @@
               <figcaption class="text-sm text-gray-400 mt-4 text-center">
                 Select a marker or facility name. “2” marks the shared Monroe
                 location; hold rooms lack coordinates.
+                <span class="block mt-2 text-xs text-white/50">
+                  Map by the U.S. Census Bureau, Abe.suleiman, and Lodewijk
+                  Gelauff via
+                  <a
+                    href="https://commons.wikimedia.org/wiki/File:Blank_map_subdivisions_Michigan.svg"
+                    class="underline hover:text-white"
+                    >Wikimedia Commons</a
+                  >
+                  (<a
+                    href="https://creativecommons.org/publicdomain/zero/1.0/"
+                    class="underline hover:text-white"
+                    >CC0</a
+                  >).
+                </span>
               </figcaption>
+              <div class="mt-6 pt-5 border-t border-gray-700 text-left">
+                <div class="flex items-baseline justify-between gap-4 mb-3">
+                  <h3
+                    id="sparkline-title"
+                    class="text-xs uppercase tracking-wider text-white/60"
+                  >
+                    Six Month Trend
+                  </h3>
+                  <p
+                    id="sparkline-change"
+                    class="text-sm font-medium tabular-nums text-white/70"
+                  ></p>
+                </div>
+                <svg
+                  id="facility-sparkline"
+                  viewBox="0 0 300 72"
+                  preserveAspectRatio="none"
+                  class="block w-full h-20 text-red-400"
+                  role="img"
+                  aria-labelledby="sparkline-title sparkline-description"
+                >
+                  <desc id="sparkline-description"></desc>
+                  <path
+                    id="sparkline-area"
+                    fill="currentColor"
+                    opacity="0.12"
+                  ></path>
+                  <path
+                    id="sparkline-line"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    vector-effect="non-scaling-stroke"
+                  ></path>
+                  <circle
+                    id="sparkline-endpoint"
+                    r="4"
+                    fill="currentColor"
+                  ></circle>
+                </svg>
+                <div
+                  class="flex justify-between gap-4 mt-2 text-xs text-white/60 tabular-nums"
+                >
+                  <span id="sparkline-start"></span>
+                  <span id="sparkline-end" class="text-right"></span>
+                </div>
+              </div>
             </figure>
             <div
               id="other-facilities"
@@ -262,7 +325,12 @@
       <div class="container mx-auto px-6">
         <p>
           &copy; <span id="copyright-year"></span> Michigan Detention Awareness
-          Project. All Rights Reserved.
+          Project.
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/deed.en"
+            class="underline hover:text-white"
+            >Creative Commons Attribution 4.0 International</a
+          >.
         </p>
         <p class="text-sm text-gray-400 mt-2">
           Seeking transparency and accountability in ICE detentions in Michigan.
@@ -273,6 +341,15 @@
             class="underline hover:text-white"
             >director@michigan-detention-awareness.org</a
           >
+        </p>
+        <p class="text-sm text-gray-400 mt-4">
+          Made with <span role="img" aria-label="love">❤️</span> by Will
+          Fitzgerald.
+          <a
+            href="https://github.com/willf/michigan-detention-awareness-com"
+            class="underline hover:text-white"
+            >View the source on GitHub</a
+          >.
         </p>
       </div>
     </footer>
@@ -308,6 +385,66 @@
             year: "numeric",
             timeZone: "UTC",
           }).format(new Date(`${date}T00:00:00Z`));
+        }
+
+        function formatShortDate(date) {
+          return new Intl.DateTimeFormat("en-US", {
+            month: "short",
+            day: "numeric",
+            timeZone: "UTC",
+          }).format(new Date(`${date}T00:00:00Z`));
+        }
+
+        function renderSparkline() {
+          const width = 300;
+          const height = 72;
+          const padding = 5;
+          const observations = activeFacility.weekly.slice(-26);
+          const counts = observations.map((observation) => observation.count);
+          const minimum = Math.min(...counts);
+          const maximum = Math.max(...counts);
+          const range = maximum - minimum;
+          const points = observations.map(function (observation, index) {
+            return {
+              x:
+                padding +
+                (index / Math.max(observations.length - 1, 1)) *
+                  (width - padding * 2),
+              y:
+                range === 0
+                  ? height / 2
+                  : padding +
+                    ((maximum - observation.count) / range) *
+                      (height - padding * 2),
+            };
+          });
+          const line = points
+            .map(
+              (point, index) =>
+                `${index === 0 ? "M" : "L"}${point.x.toFixed(1)},${point.y.toFixed(1)}`,
+            )
+            .join(" ");
+          const area = `${line} L${points.at(-1).x.toFixed(1)},${height - padding} L${points[0].x.toFixed(1)},${height - padding} Z`;
+          const first = observations[0];
+          const last = observations.at(-1);
+          const change = last.count - first.count;
+
+          document.getElementById("sparkline-line").setAttribute("d", line);
+          document.getElementById("sparkline-area").setAttribute("d", area);
+          document
+            .getElementById("sparkline-endpoint")
+            .setAttribute("cx", points.at(-1).x);
+          document
+            .getElementById("sparkline-endpoint")
+            .setAttribute("cy", points.at(-1).y);
+          document.getElementById("sparkline-change").textContent =
+            `${change > 0 ? "+" : ""}${change} across 26 weeks`;
+          document.getElementById("sparkline-start").textContent =
+            `${formatShortDate(first.date)} · ${first.count}`;
+          document.getElementById("sparkline-end").textContent =
+            `${formatShortDate(last.date)} · ${last.count}`;
+          document.getElementById("sparkline-description").textContent =
+            `${displayName(activeFacility)} weekly average census over the last 26 reported weeks, from ${first.count} on ${formatDate(first.date)} to ${last.count} on ${formatDate(last.date)}. The range was ${minimum} to ${maximum}.`;
         }
 
         function renderMapMarkers() {
@@ -449,6 +586,7 @@
 
           renderFacilityChoices();
           renderMapMarkers();
+          renderSparkline();
           renderHistory();
         }
 
