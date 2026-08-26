@@ -38,6 +38,11 @@
     </style>
   </head>
   <body class="bg-gray-100 text-gray-800">
+    <a
+      href="#census"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:text-gray-900 focus:px-4 focus:py-3 focus:rounded focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-600"
+      >Skip to census history</a
+    >
     <!-- Hero Section -->
     <header class="hero-bg text-white text-center pt-8 pb-16 md:pt-12 md:pb-20">
       <div class="container mx-auto px-6">
@@ -77,6 +82,12 @@
         <p id="latest-week" class="text-sm text-gray-400 mt-2">
           Week of August 3, 2026
         </p>
+        <p
+          id="facility-update-status"
+          class="sr-only"
+          aria-live="polite"
+          aria-atomic="true"
+        ></p>
 
         <section
           aria-labelledby="other-facilities-heading"
@@ -187,15 +198,29 @@
     <!-- Main Content -->
     <main class="container mx-auto px-4 md:px-6 py-12 md:py-16">
       <!--  Census Table Section -->
-      <section id="census" class="mb-12">
-        <h2 class="text-3xl font-bold text-balance text-center mb-8">
+      <section id="census" class="mb-12" tabindex="-1">
+        <h2
+          id="history-heading"
+          class="text-3xl font-bold text-balance text-center mb-8"
+        >
           Weekly Census History for
           <span id="table-facility-name">Baldwin Detention Center</span>
         </h2>
-        <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <div
+          class="overflow-x-auto bg-white rounded-lg shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600"
+          role="region"
+          aria-labelledby="history-heading"
+          tabindex="0"
+        >
           <table
             class="min-w-[640px] w-full divide-y divide-gray-200 tabular-nums"
           >
+            <caption class="sr-only">
+              Weekly average census and change from the previous week for
+              <span id="table-caption-facility-name"
+                >Baldwin Detention Center</span
+              >.
+            </caption>
             <thead class="bg-gray-50">
               <tr>
                 <th
@@ -479,17 +504,18 @@
               ((bounds.north - location.latitude) /
                 (bounds.north - bounds.south)) *
               100;
-            const selected = group.some(
-              (facility) => facility.code === activeFacility?.code,
-            );
             const marker = document.createElement("button");
             const facilityNames = group.map(displayName).join(" and ");
 
             marker.type = "button";
+            marker.dataset.facilityCodes = group
+              .map((facility) => facility.code)
+              .join(",");
             marker.style.left = `${x}%`;
             marker.style.top = `${y}%`;
             marker.className =
               "group absolute -translate-x-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white";
+            marker.setAttribute("aria-controls", "census");
             marker.setAttribute(
               "aria-label",
               `View ${facilityNames} in ${location.city}`,
@@ -497,9 +523,6 @@
             marker.title = `${facilityNames} — ${location.city}`;
 
             const markerDot = document.createElement("span");
-            markerDot.className = selected
-              ? "flex items-center justify-center w-6 h-6 rounded-full bg-gray-900 border-2 border-white text-white text-xs font-bold ring-4 ring-white/60 motion-safe:transition-transform"
-              : "flex items-center justify-center w-5 h-5 rounded-full bg-white border-2 border-gray-900 text-gray-900 text-xs font-bold motion-safe:transition-transform group-hover:scale-125";
             markerDot.textContent = group.length > 1 ? group.length : "";
             marker.appendChild(markerDot);
             marker.addEventListener("click", function () {
@@ -507,6 +530,24 @@
             });
             mapMarkersContainer.appendChild(marker);
           });
+
+          updateMapMarkers();
+        }
+
+        function updateMapMarkers() {
+          mapMarkersContainer
+            .querySelectorAll("button[data-facility-codes]")
+            .forEach(function (marker) {
+              const selected = marker.dataset.facilityCodes
+                .split(",")
+                .includes(activeFacility.code);
+              const markerDot = marker.firstElementChild;
+
+              marker.setAttribute("aria-pressed", String(selected));
+              markerDot.className = selected
+                ? "flex items-center justify-center w-6 h-6 rounded-full bg-gray-900 border-2 border-white text-white text-xs font-bold ring-4 ring-white/60 motion-safe:transition-transform"
+                : "flex items-center justify-center w-5 h-5 rounded-full bg-white border-2 border-gray-900 text-gray-900 text-xs font-bold motion-safe:transition-transform group-hover:scale-125";
+            });
         }
 
         function makeRow(entry, originalIndex) {
@@ -521,7 +562,7 @@
               difference > 0
                 ? "text-red-600"
                 : difference < 0
-                  ? "text-green-600"
+                  ? "text-green-700"
                   : "text-gray-500";
           }
 
@@ -565,7 +606,7 @@
           }
         }
 
-        function selectFacility(code) {
+        function selectFacility(code, announce = true) {
           activeFacility = facilities.find(
             (facility) => facility.code === code,
           );
@@ -583,11 +624,42 @@
             `Week of ${formatDate(latest.date)}`;
           document.getElementById("table-facility-name").textContent =
             selectedName;
+          document.getElementById("table-caption-facility-name").textContent =
+            selectedName;
 
-          renderFacilityChoices();
-          renderMapMarkers();
+          updateFacilityChoices();
+          updateMapMarkers();
           renderSparkline();
           renderHistory();
+
+          if (announce) {
+            document.getElementById("facility-update-status").textContent =
+              `Showing ${selectedName}. Latest weekly average census ${latest.count}, week of ${formatDate(latest.date)}. Census history and six month trend updated.`;
+          }
+        }
+
+        function updateFacilityChoices() {
+          facilitiesContainer
+            .querySelectorAll("button[data-facility-code]")
+            .forEach(function (button) {
+              const selected =
+                button.dataset.facilityCode === activeFacility.code;
+              const count = button.querySelector("[data-facility-count]");
+              const location = button.querySelector(
+                "[data-facility-location]",
+              );
+
+              button.setAttribute("aria-pressed", String(selected));
+              button.className = selected
+                ? "rounded-lg p-5 text-left bg-white text-gray-900 ring-2 ring-red-500 focus-visible:outline-none focus-visible:ring-4 motion-safe:transition-shadow"
+                : "rounded-lg p-5 text-left bg-gray-700 hover:bg-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 motion-safe:transition-colors";
+              count.className = selected
+                ? "block text-4xl font-black text-red-600"
+                : "block text-4xl font-black text-red-400";
+              location.className = selected
+                ? "block text-sm text-gray-600 mt-1"
+                : "block text-sm text-gray-300 mt-1";
+            });
         }
 
         function renderFacilityChoices() {
@@ -595,17 +667,13 @@
 
           facilities.forEach(function (facility) {
             const latest = facility.weekly.at(-1);
-            const selected = facility.code === activeFacility?.code;
             const button = document.createElement("button");
             button.type = "button";
+            button.dataset.facilityCode = facility.code;
             button.setAttribute("aria-controls", "census");
-            button.setAttribute("aria-pressed", String(selected));
-            button.className = selected
-              ? "rounded-lg p-5 text-left bg-white text-gray-900 ring-2 ring-red-500 focus-visible:outline-none focus-visible:ring-4 motion-safe:transition-shadow"
-              : "rounded-lg p-5 text-left bg-gray-700 hover:bg-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 motion-safe:transition-colors";
 
             const count = document.createElement("span");
-            count.className = "block text-4xl font-black text-red-400";
+            count.dataset.facilityCount = "";
             count.textContent = latest.count;
 
             const name = document.createElement("span");
@@ -613,9 +681,7 @@
             name.textContent = displayName(facility);
 
             const location = document.createElement("span");
-            location.className = selected
-              ? "block text-sm text-gray-600 mt-1"
-              : "block text-sm text-gray-400 mt-1";
+            location.dataset.facilityLocation = "";
             location.textContent = facility.city || "Location not listed";
 
             button.append(count, name, location);
@@ -624,10 +690,18 @@
             });
             facilitiesContainer.appendChild(button);
           });
+
+          updateFacilityChoices();
         }
 
         if (facilities.length) {
-          selectFacility(DEFAULT_FACILITY_CODE);
+          activeFacility =
+            facilities.find(
+              (facility) => facility.code === DEFAULT_FACILITY_CODE,
+            ) || facilities[0];
+          renderFacilityChoices();
+          renderMapMarkers();
+          selectFacility(activeFacility.code, false);
         } else {
           facilitiesContainer.textContent =
             "Facility data could not be loaded.";
