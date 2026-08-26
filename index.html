@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Baldwin Detention Center: The Numbers</title>
+    <title>Michigan ICE Detention Census</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link
-      href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700;900&amp;display=swap"
       rel="stylesheet"
     />
     <style>
@@ -38,46 +39,119 @@
   </head>
   <body class="bg-gray-100 text-gray-800">
     <!-- Hero Section -->
-    <header class="hero-bg text-white text-center py-20 md:py-32">
+    <header class="hero-bg text-white text-center pt-8 pb-16 md:pt-12 md:pb-20">
       <div class="container mx-auto px-6">
-        <h1 class="text-3xl md:text-5xl font-bold">Baldwin Detention Center</h1>
-        <p class="text-xl md:text-2xl text-gray-300 mt-1 mb-4 font-light">
-          (North Lake Processing Center)
+        <div
+          class="flex items-center justify-center gap-3 mb-6"
+          aria-label="Michigan Detention Awareness Project"
+        >
+          <img
+            src="assets/favicon.svg"
+            alt=""
+            width="40"
+            height="40"
+            class="w-10 h-10"
+          />
+          <p class="text-left leading-tight">
+            <span class="block text-xs uppercase tracking-[0.2em] text-white/60"
+              >Michigan</span
+            >
+            <span class="block text-sm font-medium tracking-wide text-white"
+              >Detention Awareness Project</span
+            >
+          </p>
+        </div>
+        <h1 id="facility-name" class="text-3xl md:text-5xl font-bold">
+          Baldwin Detention Center
+        </h1>
+        <p
+          id="facility-subtitle"
+          class="text-xl md:text-2xl text-gray-300 mt-1 mb-4 font-light"
+        >
+          North Lake Processing Center &middot; Baldwin
         </p>
         <div class="shock-number" id="detainee-number"></div>
-        <p class="text-lg md:text-xl mt-4">Current Detainee Census</p>
-        <p class="text-sm text-gray-400 mt-2">
-          (Based on latest available data)
+        <p class="text-lg md:text-xl mt-4">
+          Latest Reported Weekly Average Census
         </p>
+        <p id="latest-week" class="text-sm text-gray-400 mt-2">
+          Week of August 3, 2026
+        </p>
+
+        <section
+          aria-labelledby="other-facilities-heading"
+          class="max-w-5xl mx-auto mt-10 pt-8 border-t border-gray-700"
+        >
+          <h2 id="other-facilities-heading" class="text-2xl font-bold">
+            Choose a Facility
+          </h2>
+          <p class="text-sm text-gray-400 mt-2 mb-6">
+            Select a facility name to view its complete weekly history.
+          </p>
+          <div
+            class="grid grid-cols-1 lg:grid-cols-[minmax(220px,300px)_1fr] gap-8 items-center"
+          >
+            <figure class="bg-gray-800 rounded-lg p-6">
+              <div class="relative w-full max-w-xs mx-auto">
+                <img
+                  src="assets/michigan-map.svg"
+                  alt="Map of Michigan with county boundaries"
+                  width="300"
+                  height="315"
+                  class="w-full"
+                />
+                <div
+                  id="facility-map-markers"
+                  class="absolute inset-0"
+                  role="group"
+                  aria-label="Facility locations"
+                ></div>
+              </div>
+              <figcaption class="text-sm text-gray-400 mt-4 text-center">
+                Select a marker or facility name. “2” marks the shared Monroe
+                location; hold rooms lack coordinates.
+              </figcaption>
+            </figure>
+            <div
+              id="other-facilities"
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left"
+            ></div>
+          </div>
+        </section>
       </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-6 py-12">
+    <main class="container mx-auto px-4 md:px-6 py-12 md:py-16">
       <!--  Census Table Section -->
       <section id="census" class="mb-12">
-        <h2 class="text-3xl font-bold text-center mb-8">Census Data</h2>
+        <h2 class="text-3xl font-bold text-balance text-center mb-8">
+          Weekly Census History for
+          <span id="table-facility-name">Baldwin Detention Center</span>
+        </h2>
         <div class="overflow-x-auto bg-white rounded-lg shadow">
-          <table class="min-w-full divide-y divide-gray-200">
+          <table
+            class="min-w-[640px] w-full divide-y divide-gray-200 tabular-nums"
+          >
             <thead class="bg-gray-50">
               <tr>
                 <th
                   scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Census Date
+                  Week Of
                 </th>
                 <th
                   scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Census
+                  Weekly Average Census
                 </th>
                 <th
                   scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Change from Previous Count
+                  Change from Previous Week
                 </th>
               </tr>
             </thead>
@@ -87,8 +161,16 @@
             ></tbody>
           </table>
         </div>
-        <p class="text-center text-sm text-gray-500 mt-4">
-          Note: This data is necessarily approximate.
+        <p
+          class="max-w-3xl mx-auto text-center text-sm leading-relaxed text-gray-500 mt-4"
+        >
+          Government data provided by ICE in response to a FOIA request,
+          processed by the
+          <a
+            href="https://deportationdata.org"
+            class="text-blue-700 underline hover:text-blue-900"
+            >Deportation Data Project</a
+          >, and analyzed by the Michigan Detention Awareness Project.
         </p>
       </section>
 
@@ -113,41 +195,62 @@
 
       <!-- More Info Links Section -->
       <section id="more-info" class="mt-12 pt-12 border-t border-gray-300">
-        <h3 class="text-2xl font-bold text-center mb-6">
+        <h2 class="text-2xl font-bold text-balance text-center mb-6">
           Further Reading & Resources
-        </h3>
+        </h2>
         <div class="max-w-3xl mx-auto space-y-4">
-          <a
-            href="https://www.geogroup.com/facilities/north-lake-processing-center/"
-            class="block bg-white p-4 rounded-lg shadow hover:bg-gray-50 transition"
-          >
-            <p class="font-semibold text-blue-700">
-              Official GEO Group Facility Page
+          <div class="block bg-white p-4 rounded-lg shadow">
+            <p class="font-semibold">
+              <a
+                href="https://deportationdata.org/"
+                class="text-blue-700 underline hover:text-blue-900"
+                >Deportation Data Project</a
+              >
             </p>
             <p class="text-sm">
-              Information directly from the private prison operator.
+              The Deportation Data Project “uses public records litigation to
+              obtain, post and analyze U.S. government immigration enforcement
+              data.” Summary data for Michigan
+              <a
+                href="https://app.deportationdata.org/?agency=ice&amp;dataset=detention-stints&amp;tab=summarize&amp;s=eJw9zrFqwzAUQNF_ufMzOGoI5W2FLh3aHwhBCOfFVatKRlHcmOB_D2TIfoZzY0ZfhHMLDSXMoz-GmBaEFv8M5d_sF2G0gnIKQ0yxLQhjnVC8zyWb9wjXiu5xvdt2G9dttgiud7uuf-36HQfhFFOzekZvtGUylLGWy4QwlPyD8vb1jjB8x3SsltH9E9ZLsodL6ONqCGVCiRlhDgnl84P1sK53-YA-zg"
+                class="text-blue-700 underline hover:text-blue-900"
+                >can be found here</a
+              >.
             </p>
-          </a>
+          </div>
           <a
             href="https://michiganimmigrant.org/"
-            class="block bg-white p-4 rounded-lg shadow hover:bg-gray-50 transition"
+            class="block bg-white p-4 rounded-lg shadow hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 motion-safe:transition-colors"
           >
             <p class="font-semibold text-blue-700">
               Michigan Immigrant Rights Center
             </p>
             <p class="text-sm">
-              A legal resource center for Michigan's immigrant communities.
+              A legal resource center for Michigan’s immigrant communities.
             </p>
           </a>
           <a
-            href="https://nodetentioncentersmi.org/about-north-lake-cf/"
-            class="block bg-white p-4 rounded-lg shadow hover:bg-gray-50 transition"
+            href="https://www.mosaicgr.org/hope/"
+            class="block bg-white p-4 rounded-lg shadow hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 motion-safe:transition-colors"
           >
             <p class="font-semibold text-blue-700">
-              About North Lake Processing Center
+              Mosaic Church’s Hope for Neighbors
             </p>
             <p class="text-sm">
-              Article from No Detention Centers In Michigan.
+              A Grand Rapids-based organization providing support and advocacy
+              for immigrants and refugees, focusing on those at North Lake.
+            </p>
+          </a>
+          <a
+            href="https://www.facebook.com/profile.php?id=61582409566361"
+            class="block bg-white p-4 rounded-lg shadow hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 motion-safe:transition-colors"
+          >
+            <p class="font-semibold text-blue-700">
+              Christians for Peace and Liberation
+            </p>
+            <p class="text-sm">
+              A Grand Rapids-based organization providing support and advocacy
+              for immigrants and refugees, focusing on those at North Lake.
             </p>
           </a>
         </div>
@@ -174,84 +277,222 @@
       </div>
     </footer>
 
+    <script src="assets/facility-weekly-data.js"></script>
     <script>
-      // -------------------------------------------------------
-      // CENSUS DATA — update this array to add new entries.
-      // Each entry: { date: "Month D, YYYY", count: number }
-      // -------------------------------------------------------
-      const censusData = [
-        { date: "September 8, 2025", count: 660 },
-        { date: "May 5, 2026", count: 992 },
-        { date: "June 17, 2026", count: 773 },
-        { date: "July 2, 2026", count: 778 },
-      ];
-      // -------------------------------------------------------
-
       document.addEventListener("DOMContentLoaded", function () {
-        // Set copyright year
+        const DEFAULT_FACILITY_CODE = "NRLKCMI";
+        const PAGE_SIZE = 20;
+        const facilities = window.facilityWeeklyData || [];
+        const facilitiesContainer = document.getElementById("other-facilities");
+        const mapMarkersContainer = document.getElementById(
+          "facility-map-markers",
+        );
+        const tbody = document.getElementById("census-tbody");
+        let activeFacility;
+        let reversedWeekly = [];
+        let shown = 0;
+
         document.getElementById("copyright-year").textContent =
           new Date().getFullYear();
 
-        // Populate hero number with the most recent count
-        const latest = censusData[censusData.length - 1];
-        document.getElementById("detainee-number").textContent = latest.count;
+        function displayName(facility) {
+          return facility.code === DEFAULT_FACILITY_CODE
+            ? "Baldwin Detention Center"
+            : facility.name;
+        }
 
-        // Build census table rows (most recent first)
-        const PAGE_SIZE = 20;
-        const tbody = document.getElementById("census-tbody");
-        const reversed = censusData.slice().reverse();
+        function formatDate(date) {
+          return new Intl.DateTimeFormat("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            timeZone: "UTC",
+          }).format(new Date(`${date}T00:00:00Z`));
+        }
+
+        function renderMapMarkers() {
+          const bounds = {
+            west: -90.42,
+            east: -82.41,
+            north: 48.31,
+            south: 41.69,
+          };
+          const locationGroups = new Map();
+
+          facilities
+            .filter(
+              (facility) =>
+                facility.latitude !== null && facility.longitude !== null,
+            )
+            .forEach(function (facility) {
+              const key = `${facility.latitude.toFixed(5)},${facility.longitude.toFixed(5)}`;
+              const group = locationGroups.get(key) || [];
+              group.push(facility);
+              locationGroups.set(key, group);
+            });
+
+          mapMarkersContainer.replaceChildren();
+          locationGroups.forEach(function (group) {
+            const location = group[0];
+            const x =
+              ((location.longitude - bounds.west) /
+                (bounds.east - bounds.west)) *
+              100;
+            const y =
+              ((bounds.north - location.latitude) /
+                (bounds.north - bounds.south)) *
+              100;
+            const selected = group.some(
+              (facility) => facility.code === activeFacility?.code,
+            );
+            const marker = document.createElement("button");
+            const facilityNames = group.map(displayName).join(" and ");
+
+            marker.type = "button";
+            marker.style.left = `${x}%`;
+            marker.style.top = `${y}%`;
+            marker.className =
+              "group absolute -translate-x-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white";
+            marker.setAttribute(
+              "aria-label",
+              `View ${facilityNames} in ${location.city}`,
+            );
+            marker.title = `${facilityNames} — ${location.city}`;
+
+            const markerDot = document.createElement("span");
+            markerDot.className = selected
+              ? "flex items-center justify-center w-6 h-6 rounded-full bg-gray-900 border-2 border-white text-white text-xs font-bold ring-4 ring-white/60 motion-safe:transition-transform"
+              : "flex items-center justify-center w-5 h-5 rounded-full bg-white border-2 border-gray-900 text-gray-900 text-xs font-bold motion-safe:transition-transform group-hover:scale-125";
+            markerDot.textContent = group.length > 1 ? group.length : "";
+            marker.appendChild(markerDot);
+            marker.addEventListener("click", function () {
+              selectFacility(group[0].code);
+            });
+            mapMarkersContainer.appendChild(marker);
+          });
+        }
 
         function makeRow(entry, originalIndex) {
-          const prev = censusData[originalIndex - 1];
+          const previous = activeFacility.weekly[originalIndex - 1];
           let changeText = "-";
           let changeClass = "text-gray-500";
-          if (prev) {
-            const diff = entry.count - prev.count;
-            changeText = (diff > 0 ? "+" : "") + diff;
+
+          if (previous) {
+            const difference = entry.count - previous.count;
+            changeText = (difference > 0 ? "+" : "") + difference;
             changeClass =
-              diff > 0
+              difference > 0
                 ? "text-red-600"
-                : diff < 0
+                : difference < 0
                   ? "text-green-600"
                   : "text-gray-500";
           }
-          const tr = document.createElement("tr");
-          tr.innerHTML =
-            `<td class="px-6 py-4 whitespace-nowrap">${entry.date}</td>` +
+
+          const row = document.createElement("tr");
+          row.innerHTML =
+            `<td class="px-6 py-4 whitespace-nowrap">${formatDate(entry.date)}</td>` +
             `<td class="px-6 py-4 whitespace-nowrap">${entry.count}</td>` +
             `<td class="px-6 py-4 whitespace-nowrap ${changeClass}">${changeText}</td>`;
-          return tr;
+          return row;
         }
-
-        let shown = 0;
 
         function showMore() {
-          const next = Math.min(shown + PAGE_SIZE, reversed.length);
-          for (let i = shown; i < next; i++) {
-            const originalIndex = censusData.length - 1 - i;
-            tbody.appendChild(makeRow(reversed[i], originalIndex));
+          const next = Math.min(shown + PAGE_SIZE, reversedWeekly.length);
+          for (let index = shown; index < next; index++) {
+            const originalIndex = activeFacility.weekly.length - 1 - index;
+            tbody.appendChild(makeRow(reversedWeekly[index], originalIndex));
           }
           shown = next;
-          if (shown >= reversed.length) {
-            const btn = document.getElementById("load-more-btn");
-            if (btn) btn.remove();
+
+          if (shown >= reversedWeekly.length) {
+            document.getElementById("load-more-btn")?.remove();
           }
         }
 
-        showMore();
+        function renderHistory() {
+          tbody.replaceChildren();
+          document.getElementById("load-more-btn")?.remove();
+          reversedWeekly = activeFacility.weekly.slice().reverse();
+          shown = 0;
+          showMore();
 
-        if (reversed.length > PAGE_SIZE) {
-          const btn = document.createElement("button");
-          btn.id = "load-more-btn";
-          btn.textContent = "Show more";
-          btn.className =
-            "mt-4 mx-auto block bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-6 rounded-lg transition";
-          btn.addEventListener("click", showMore);
-          document.getElementById("census").appendChild(btn);
+          if (reversedWeekly.length > PAGE_SIZE) {
+            const button = document.createElement("button");
+            button.id = "load-more-btn";
+            button.type = "button";
+            button.textContent = "Show more";
+            button.className =
+              "min-h-[44px] mt-4 mx-auto block bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-6 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 motion-safe:transition-colors";
+            button.addEventListener("click", showMore);
+            document.getElementById("census").appendChild(button);
+          }
         }
 
-        // Hide census section if empty
-        if (censusData.length < 1) {
+        function selectFacility(code) {
+          activeFacility = facilities.find(
+            (facility) => facility.code === code,
+          );
+          if (!activeFacility) return;
+
+          const latest = activeFacility.weekly.at(-1);
+          const selectedName = displayName(activeFacility);
+          document.getElementById("facility-name").textContent = selectedName;
+          document.getElementById("facility-subtitle").textContent =
+            activeFacility.code === DEFAULT_FACILITY_CODE
+              ? `${activeFacility.name} · ${activeFacility.city}`
+              : activeFacility.city;
+          document.getElementById("detainee-number").textContent = latest.count;
+          document.getElementById("latest-week").textContent =
+            `Week of ${formatDate(latest.date)}`;
+          document.getElementById("table-facility-name").textContent =
+            selectedName;
+
+          renderFacilityChoices();
+          renderMapMarkers();
+          renderHistory();
+        }
+
+        function renderFacilityChoices() {
+          facilitiesContainer.replaceChildren();
+
+          facilities.forEach(function (facility) {
+            const latest = facility.weekly.at(-1);
+            const selected = facility.code === activeFacility?.code;
+            const button = document.createElement("button");
+            button.type = "button";
+            button.setAttribute("aria-controls", "census");
+            button.setAttribute("aria-pressed", String(selected));
+            button.className = selected
+              ? "rounded-lg p-5 text-left bg-white text-gray-900 ring-2 ring-red-500 focus-visible:outline-none focus-visible:ring-4 motion-safe:transition-shadow"
+              : "rounded-lg p-5 text-left bg-gray-700 hover:bg-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 motion-safe:transition-colors";
+
+            const count = document.createElement("span");
+            count.className = "block text-4xl font-black text-red-400";
+            count.textContent = latest.count;
+
+            const name = document.createElement("span");
+            name.className = "block font-bold mt-2";
+            name.textContent = displayName(facility);
+
+            const location = document.createElement("span");
+            location.className = selected
+              ? "block text-sm text-gray-600 mt-1"
+              : "block text-sm text-gray-400 mt-1";
+            location.textContent = facility.city || "Location not listed";
+
+            button.append(count, name, location);
+            button.addEventListener("click", function () {
+              selectFacility(facility.code);
+            });
+            facilitiesContainer.appendChild(button);
+          });
+        }
+
+        if (facilities.length) {
+          selectFacility(DEFAULT_FACILITY_CODE);
+        } else {
+          facilitiesContainer.textContent =
+            "Facility data could not be loaded.";
           document.getElementById("census").style.display = "none";
         }
       });
