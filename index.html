@@ -349,8 +349,10 @@
     <footer class="bg-gray-800 text-white text-center py-6 mt-12">
       <div class="container mx-auto px-6">
         <p>
-          &copy; <span id="copyright-year"></span> Michigan Detention Awareness
-          Project.
+          &copy; <span id="copyright-year"></span>
+          <a href="" class="underline hover:text-white"
+            >Michigan Detention Awareness Project</a
+          >.
           <a
             href="https://creativecommons.org/licenses/by/4.0/deed.en"
             class="underline hover:text-white"
@@ -369,7 +371,7 @@
         </p>
         <p class="text-sm text-gray-400 mt-4">
           Made with <span role="img" aria-label="love">❤️</span> by Will
-          Fitzgerald.
+          Fitzgerald using AI models from OpenAI and Google.
           <a
             href="https://github.com/willf/michigan-detention-awareness-com"
             class="underline hover:text-white"
@@ -645,9 +647,7 @@
               const selected =
                 button.dataset.facilityCode === activeFacility.code;
               const count = button.querySelector("[data-facility-count]");
-              const location = button.querySelector(
-                "[data-facility-location]",
-              );
+              const location = button.querySelector("[data-facility-location]");
 
               button.setAttribute("aria-pressed", String(selected));
               button.className = selected
