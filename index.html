@@ -123,12 +123,13 @@
           North Lake Processing Center &middot; Baldwin
         </p>
         <div class="shock-number" id="detainee-number"></div>
-        <p class="text-lg md:text-xl mt-4">
+        <p id="latest-count-label" class="text-lg md:text-xl mt-4">
           Latest Reported Weekly Average Census
         </p>
         <p id="latest-week" class="text-sm text-gray-400 mt-2">
           Week of August 3, 2026
         </p>
+        <p id="latest-source" class="text-sm text-gray-400 mt-2" hidden></p>
         <p
           id="facility-update-status"
           class="sr-only"
@@ -144,7 +145,7 @@
             Choose a Facility
           </h2>
           <p class="text-sm text-gray-400 mt-2 mb-6">
-            Select a facility name to view its complete weekly history.
+            Select a facility name to view its complete census history.
           </p>
           <div
             class="grid grid-cols-1 lg:grid-cols-[minmax(220px,300px)_1fr] gap-8 items-center"
@@ -219,6 +220,7 @@
                     stroke-linejoin="round"
                     vector-effect="non-scaling-stroke"
                   ></path>
+                  <g id="sparkline-snapshots"></g>
                   <circle
                     id="sparkline-endpoint"
                     r="4"
@@ -231,6 +233,7 @@
                   <span id="sparkline-start"></span>
                   <span id="sparkline-end" class="text-right"></span>
                 </div>
+                <p id="sparkline-note" class="mt-2 text-xs text-white/60"></p>
               </div>
             </figure>
             <div
@@ -250,7 +253,7 @@
           id="history-heading"
           class="text-3xl font-bold text-balance text-center mb-8"
         >
-          Weekly Census History for
+          Census History for
           <span id="table-facility-name">Baldwin Detention Center</span>
         </h2>
         <div
@@ -263,7 +266,7 @@
             class="min-w-[640px] w-full divide-y divide-gray-200 tabular-nums"
           >
             <caption class="sr-only">
-              Weekly average census and change from the previous week for
+              Reported counts, measurement types, sources, and change from the previous report for
               <span id="table-caption-facility-name"
                 >Baldwin Detention Center</span
               >.
@@ -274,20 +277,21 @@
                   scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Week Of
+                  Report Date
                 </th>
                 <th
                   scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Weekly Average Census
+                  Residents
                 </th>
                 <th
                   scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Change from Previous Week
+                  Change from Previous Report
                 </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Measurement / Source</th>
               </tr>
             </thead>
             <tbody
@@ -299,13 +303,15 @@
         <p
           class="max-w-3xl mx-auto text-center text-sm leading-relaxed text-gray-500 mt-4"
         >
-          Government data provided by ICE in response to a FOIA request,
+          Weekly averages use government data provided by ICE in response to a FOIA request,
           processed by the
           <a
             href="https://deportationdata.org"
             class="text-blue-700 underline hover:text-blue-900"
             >Deportation Data Project</a
           >, and analyzed by the Michigan Detention Awareness Project.
+          Dated snapshots list their sources in the table. Changes compare consecutive reports regardless of source or measurement type;
+          reporting intervals may vary.
         </p>
       </section>
 
@@ -432,17 +438,67 @@
 
     <script src="assets/facility-weekly-data.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
+      document.addEventListener("DOMContentLoaded", async function () {
         const DEFAULT_FACILITY_CODE = "NRLKCMI";
         const PAGE_SIZE = 20;
         const facilities = window.facilityWeeklyData || [];
+        let supplementalObservations = [];
+        try {
+          const response = await fetch("assets/facility-observations.json", { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const records = await response.json();
+          if (!Array.isArray(records)) throw new Error("Expected an array");
+          supplementalObservations = records.filter(function (record) {
+            return facilities.some((facility) => facility.code === record.facilityCode) &&
+              record.measurement === "snapshot" &&
+              Number.isInteger(record.count) && record.count >= 0 &&
+              typeof record.date === "string" &&
+              /^\d{4}-\d{2}-\d{2}$/.test(record.date) &&
+              Number.isFinite(Date.parse(`${record.date}T00:00:00Z`)) &&
+              new Date(`${record.date}T00:00:00Z`).toISOString().slice(0, 10) === record.date &&
+              typeof record.source === "string" && record.source.trim().length > 0;
+          });
+        } catch (error) {
+          console.warn("Supplemental observations could not be loaded:", error);
+        }
+
+        function latestObservation(facility) {
+          const weekly = { ...facility.weekly.at(-1), measurement: "weekly" };
+          return supplementalObservations
+            .filter((record) => record.facilityCode === facility.code)
+            .reduce((latest, record) => record.date >= latest.date ? record : latest, weekly);
+        }
+
+        function observationDate(observation) {
+          return `${observation.measurement === "snapshot" ? "As of" : "Week of"} ${formatDate(observation.date)}`;
+        }
+
+        function renderSource(observation) {
+          const container = document.getElementById("latest-source");
+          container.replaceChildren();
+          container.hidden = !observation.source;
+          if (!observation.source) return;
+          container.append("Source: ");
+          let url;
+          try { url = new URL(observation.sourceUrl); } catch (_) {}
+          if (url && ["https:", "http:"].includes(url.protocol)) {
+            const link = document.createElement("a");
+            link.href = url.href;
+            link.textContent = observation.source;
+            link.className = "underline hover:text-white";
+            container.append(link);
+          } else {
+            container.append(observation.source);
+          }
+        }
         const facilitiesContainer = document.getElementById("other-facilities");
         const mapMarkersContainer = document.getElementById(
           "facility-map-markers",
         );
         const tbody = document.getElementById("census-tbody");
         let activeFacility;
-        let reversedWeekly = [];
+        let history = [];
+        let reversedHistory = [];
         let shown = 0;
 
         document.getElementById("copyright-year").textContent =
@@ -471,20 +527,35 @@
           }).format(new Date(`${date}T00:00:00Z`));
         }
 
+        function trendObservations(facility) {
+          const byDate = new Map(facility.weekly.map((entry) => [
+            entry.date, { ...entry, measurement: "weekly" },
+          ]));
+          supplementalObservations
+            .filter((entry) => entry.facilityCode === facility.code)
+            .forEach((entry) => byDate.set(entry.date, entry));
+          const observations = [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+          const latestTime = Date.parse(`${observations.at(-1).date}T00:00:00Z`);
+          const cutoff = latestTime - 26 * 7 * 24 * 60 * 60 * 1000;
+          return observations.filter((entry) => Date.parse(`${entry.date}T00:00:00Z`) >= cutoff);
+        }
+
         function renderSparkline() {
           const width = 300;
           const height = 72;
           const padding = 5;
-          const observations = activeFacility.weekly.slice(-26);
+          const observations = trendObservations(activeFacility);
+          const startTime = Date.parse(`${observations[0].date}T00:00:00Z`);
+          const endTime = Date.parse(`${observations.at(-1).date}T00:00:00Z`);
           const counts = observations.map((observation) => observation.count);
           const minimum = Math.min(...counts);
           const maximum = Math.max(...counts);
           const range = maximum - minimum;
-          const points = observations.map(function (observation, index) {
+          const points = observations.map(function (observation) {
             return {
               x:
                 padding +
-                (index / Math.max(observations.length - 1, 1)) *
+                ((Date.parse(`${observation.date}T00:00:00Z`) - startTime) / Math.max(endTime - startTime, 1)) *
                   (width - padding * 2),
               y:
                 range === 0
@@ -514,13 +585,34 @@
             .getElementById("sparkline-endpoint")
             .setAttribute("cy", points.at(-1).y);
           document.getElementById("sparkline-change").textContent =
-            `${change > 0 ? "+" : ""}${change} across 26 weeks`;
+            `${change > 0 ? "+" : ""}${change} residents`;
+          const snapshots = document.getElementById("sparkline-snapshots");
+          snapshots.replaceChildren();
+          observations.forEach(function (observation, index) {
+            if (observation.measurement !== "snapshot") return;
+            const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            marker.setAttribute("cx", points[index].x);
+            marker.setAttribute("cy", points[index].y);
+            marker.setAttribute("r", "4");
+            marker.setAttribute("fill", "white");
+            marker.setAttribute("stroke", "currentColor");
+            const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+            title.textContent = `${observation.count} residents, ${observationDate(observation)}. Source: ${observation.source}`;
+            marker.append(title);
+            snapshots.append(marker);
+          });
+          document.getElementById("sparkline-endpoint").style.display =
+            last.measurement === "snapshot" ? "none" : "";
+          const hasSnapshots = observations.some((entry) => entry.measurement === "snapshot");
+          document.getElementById("sparkline-note").textContent = hasSnapshots
+            ? "Weekly averages and dated snapshots (outlined dots). Lines connect available reports; gaps have no reported data."
+            : "Weekly average census over the last 26 weeks of available data.";
           document.getElementById("sparkline-start").textContent =
             `${formatShortDate(first.date)} · ${first.count}`;
           document.getElementById("sparkline-end").textContent =
             `${formatShortDate(last.date)} · ${last.count}`;
           document.getElementById("sparkline-description").textContent =
-            `${displayName(activeFacility)} weekly average census over the last 26 reported weeks, from ${first.count} on ${formatDate(first.date)} to ${last.count} on ${formatDate(last.date)}. The range was ${minimum} to ${maximum}.`;
+            `${displayName(activeFacility)} resident counts within 26 weeks of the latest report, from ${first.count} on ${formatDate(first.date)} to ${last.count} on ${formatDate(last.date)}. The range was ${minimum} to ${maximum}. ${document.getElementById("sparkline-note").textContent}`;
         }
 
         function renderMapMarkers() {
@@ -601,8 +693,15 @@
             });
         }
 
+        function censusHistory(facility) {
+          return [
+            ...facility.weekly.map((entry) => ({ ...entry, measurement: "weekly" })),
+            ...supplementalObservations.filter((entry) => entry.facilityCode === facility.code),
+          ].sort((a, b) => a.date.localeCompare(b.date));
+        }
+
         function makeRow(entry, originalIndex) {
-          const previous = activeFacility.weekly[originalIndex - 1];
+          const previous = history[originalIndex - 1];
           let changeText = "-";
           let changeClass = "text-gray-500";
 
@@ -618,22 +717,46 @@
           }
 
           const row = document.createElement("tr");
-          row.innerHTML =
-            `<td class="px-6 py-4 whitespace-nowrap">${formatDate(entry.date)}</td>` +
-            `<td class="px-6 py-4 whitespace-nowrap">${entry.count}</td>` +
-            `<td class="px-6 py-4 whitespace-nowrap ${changeClass}">${changeText}</td>`;
+          const values = [
+            observationDate(entry),
+            entry.count.toLocaleString("en-US"),
+            changeText,
+            entry.measurement === "snapshot" ? "Dated snapshot" : "Weekly average",
+          ];
+          values.forEach(function (value, index) {
+            const cell = document.createElement("td");
+            cell.className = `px-6 py-4 ${index === 3 ? "" : "whitespace-nowrap"} ${index === 2 ? changeClass : ""}`;
+            cell.textContent = value;
+            if (index === 3 && entry.source) {
+              const source = document.createElement("span");
+              source.className = "block text-xs text-gray-500 mt-1";
+              let url;
+              try { url = new URL(entry.sourceUrl); } catch (_) {}
+              if (url && ["http:", "https:"].includes(url.protocol)) {
+                const link = document.createElement("a");
+                link.href = url.href;
+                link.className = "underline text-blue-700";
+                link.textContent = entry.source;
+                source.append(link);
+              } else {
+                source.textContent = entry.source;
+              }
+              cell.append(source);
+            }
+            row.append(cell);
+          });
           return row;
         }
 
         function showMore() {
-          const next = Math.min(shown + PAGE_SIZE, reversedWeekly.length);
+          const next = Math.min(shown + PAGE_SIZE, reversedHistory.length);
           for (let index = shown; index < next; index++) {
-            const originalIndex = activeFacility.weekly.length - 1 - index;
-            tbody.appendChild(makeRow(reversedWeekly[index], originalIndex));
+            const originalIndex = history.length - 1 - index;
+            tbody.appendChild(makeRow(reversedHistory[index], originalIndex));
           }
           shown = next;
 
-          if (shown >= reversedWeekly.length) {
+          if (shown >= reversedHistory.length) {
             document.getElementById("load-more-btn")?.remove();
           }
         }
@@ -641,11 +764,12 @@
         function renderHistory() {
           tbody.replaceChildren();
           document.getElementById("load-more-btn")?.remove();
-          reversedWeekly = activeFacility.weekly.slice().reverse();
+          history = censusHistory(activeFacility);
+          reversedHistory = history.slice().reverse();
           shown = 0;
           showMore();
 
-          if (reversedWeekly.length > PAGE_SIZE) {
+          if (reversedHistory.length > PAGE_SIZE) {
             const button = document.createElement("button");
             button.id = "load-more-btn";
             button.type = "button";
@@ -663,16 +787,19 @@
           );
           if (!activeFacility) return;
 
-          const latest = activeFacility.weekly.at(-1);
+          const latest = latestObservation(activeFacility);
           const selectedName = displayName(activeFacility);
           document.getElementById("facility-name").textContent = selectedName;
           document.getElementById("facility-subtitle").textContent =
             activeFacility.code === DEFAULT_FACILITY_CODE
               ? `${activeFacility.name} · ${activeFacility.city}`
               : activeFacility.city;
-          document.getElementById("detainee-number").textContent = latest.count;
+          document.getElementById("detainee-number").textContent = latest.count.toLocaleString("en-US");
+          document.getElementById("latest-count-label").textContent =
+            latest.measurement === "snapshot" ? "Latest Reported Residents" : "Latest Reported Weekly Average Census";
+          renderSource(latest);
           document.getElementById("latest-week").textContent =
-            `Week of ${formatDate(latest.date)}`;
+            observationDate(latest);
           document.getElementById("table-facility-name").textContent =
             selectedName;
           document.getElementById("table-caption-facility-name").textContent =
@@ -685,7 +812,7 @@
 
           if (announce) {
             document.getElementById("facility-update-status").textContent =
-              `Showing ${selectedName}. Latest weekly average census ${latest.count}, week of ${formatDate(latest.date)}. Census history and six month trend updated.`;
+              `Showing ${selectedName}. ${latest.measurement === "snapshot" ? "Latest reported residents" : "Latest weekly average census"} ${latest.count}, ${observationDate(latest)}. Census history and six month trend updated.`;
           }
         }
 
@@ -715,7 +842,7 @@
           facilitiesContainer.replaceChildren();
 
           facilities.forEach(function (facility) {
-            const latest = facility.weekly.at(-1);
+            const latest = latestObservation(facility);
             const button = document.createElement("button");
             button.type = "button";
             button.dataset.facilityCode = facility.code;
@@ -723,7 +850,7 @@
 
             const count = document.createElement("span");
             count.dataset.facilityCount = "";
-            count.textContent = latest.count;
+            count.textContent = latest.count.toLocaleString("en-US");
 
             const name = document.createElement("span");
             name.className = "block font-bold mt-2";
@@ -733,7 +860,10 @@
             location.dataset.facilityLocation = "";
             location.textContent = facility.city || "Location not listed";
 
-            button.append(count, name, location);
+            const date = document.createElement("span");
+            date.className = "block text-xs mt-2";
+            date.textContent = observationDate(latest);
+            button.append(count, name, location, date);
             button.addEventListener("click", function () {
               selectFacility(facility.code);
             });
