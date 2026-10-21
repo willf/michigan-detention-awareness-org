@@ -14,10 +14,7 @@
       property="og:site_name"
       content="Michigan Detention Awareness Project"
     />
-    <meta
-      property="og:title"
-      content="Michigan ICE Detention Census"
-    />
+    <meta property="og:title" content="Michigan ICE Detention Census" />
     <meta
       property="og:description"
       content="Explore weekly census data for ICE detention facilities across Michigan."
@@ -266,7 +263,8 @@
             class="min-w-[640px] w-full divide-y divide-gray-200 tabular-nums"
           >
             <caption class="sr-only">
-              Reported counts, measurement types, sources, and change from the previous report for
+              Reported counts, measurement types, sources, and change from the
+              previous report for
               <span id="table-caption-facility-name"
                 >Baldwin Detention Center</span
               >.
@@ -291,7 +289,12 @@
                 >
                   Change from Previous Report
                 </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Measurement / Source</th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Measurement / Source
+                </th>
               </tr>
             </thead>
             <tbody
@@ -303,15 +306,16 @@
         <p
           class="max-w-3xl mx-auto text-center text-sm leading-relaxed text-gray-500 mt-4"
         >
-          Weekly averages use government data provided by ICE in response to a FOIA request,
-          processed by the
+          Weekly averages use government data provided by ICE in response to a
+          FOIA request, processed by the
           <a
             href="https://deportationdata.org"
             class="text-blue-700 underline hover:text-blue-900"
             >Deportation Data Project</a
-          >, and analyzed by the Michigan Detention Awareness Project.
-          Dated snapshots list their sources in the table. Changes compare consecutive reports regardless of source or measurement type;
-          reporting intervals may vary.
+          >, and analyzed by the Michigan Detention Awareness Project. Dated
+          snapshots list their sources in the table. Changes compare consecutive
+          reports regardless of source or measurement type; reporting intervals
+          may vary.
         </p>
       </section>
 
@@ -340,6 +344,15 @@
           Further Reading & Resources
         </h2>
         <div class="max-w-3xl mx-auto space-y-4">
+          <a
+            href="memorial/index.html"
+            class="block bg-white p-4 rounded-lg shadow hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 motion-safe:transition-colors"
+          >
+            <p class="font-semibold text-blue-700">
+              In Remembrance — Detention Memorial
+            </p>
+            <p class="text-sm">Remembering those who died in ICE detention.</p>
+          </a>
           <div class="block bg-white p-4 rounded-lg shadow">
             <p class="font-semibold">
               <a
@@ -444,19 +457,29 @@
         const facilities = window.facilityWeeklyData || [];
         let supplementalObservations = [];
         try {
-          const response = await fetch("assets/facility-observations.json", { cache: "no-store" });
+          const response = await fetch("assets/facility-observations.json", {
+            cache: "no-store",
+          });
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const records = await response.json();
           if (!Array.isArray(records)) throw new Error("Expected an array");
           supplementalObservations = records.filter(function (record) {
-            return facilities.some((facility) => facility.code === record.facilityCode) &&
+            return (
+              facilities.some(
+                (facility) => facility.code === record.facilityCode,
+              ) &&
               record.measurement === "snapshot" &&
-              Number.isInteger(record.count) && record.count >= 0 &&
+              Number.isInteger(record.count) &&
+              record.count >= 0 &&
               typeof record.date === "string" &&
               /^\d{4}-\d{2}-\d{2}$/.test(record.date) &&
               Number.isFinite(Date.parse(`${record.date}T00:00:00Z`)) &&
-              new Date(`${record.date}T00:00:00Z`).toISOString().slice(0, 10) === record.date &&
-              typeof record.source === "string" && record.source.trim().length > 0;
+              new Date(`${record.date}T00:00:00Z`)
+                .toISOString()
+                .slice(0, 10) === record.date &&
+              typeof record.source === "string" &&
+              record.source.trim().length > 0
+            );
           });
         } catch (error) {
           console.warn("Supplemental observations could not be loaded:", error);
@@ -466,7 +489,11 @@
           const weekly = { ...facility.weekly.at(-1), measurement: "weekly" };
           return supplementalObservations
             .filter((record) => record.facilityCode === facility.code)
-            .reduce((latest, record) => record.date >= latest.date ? record : latest, weekly);
+            .reduce(
+              (latest, record) =>
+                record.date >= latest.date ? record : latest,
+              weekly,
+            );
         }
 
         function observationDate(observation) {
@@ -480,7 +507,9 @@
           if (!observation.source) return;
           container.append("Source: ");
           let url;
-          try { url = new URL(observation.sourceUrl); } catch (_) {}
+          try {
+            url = new URL(observation.sourceUrl);
+          } catch (_) {}
           if (url && ["https:", "http:"].includes(url.protocol)) {
             const link = document.createElement("a");
             link.href = url.href;
@@ -528,16 +557,25 @@
         }
 
         function trendObservations(facility) {
-          const byDate = new Map(facility.weekly.map((entry) => [
-            entry.date, { ...entry, measurement: "weekly" },
-          ]));
+          const byDate = new Map(
+            facility.weekly.map((entry) => [
+              entry.date,
+              { ...entry, measurement: "weekly" },
+            ]),
+          );
           supplementalObservations
             .filter((entry) => entry.facilityCode === facility.code)
             .forEach((entry) => byDate.set(entry.date, entry));
-          const observations = [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
-          const latestTime = Date.parse(`${observations.at(-1).date}T00:00:00Z`);
+          const observations = [...byDate.values()].sort((a, b) =>
+            a.date.localeCompare(b.date),
+          );
+          const latestTime = Date.parse(
+            `${observations.at(-1).date}T00:00:00Z`,
+          );
           const cutoff = latestTime - 26 * 7 * 24 * 60 * 60 * 1000;
-          return observations.filter((entry) => Date.parse(`${entry.date}T00:00:00Z`) >= cutoff);
+          return observations.filter(
+            (entry) => Date.parse(`${entry.date}T00:00:00Z`) >= cutoff,
+          );
         }
 
         function renderSparkline() {
@@ -555,7 +593,8 @@
             return {
               x:
                 padding +
-                ((Date.parse(`${observation.date}T00:00:00Z`) - startTime) / Math.max(endTime - startTime, 1)) *
+                ((Date.parse(`${observation.date}T00:00:00Z`) - startTime) /
+                  Math.max(endTime - startTime, 1)) *
                   (width - padding * 2),
               y:
                 range === 0
@@ -590,20 +629,28 @@
           snapshots.replaceChildren();
           observations.forEach(function (observation, index) {
             if (observation.measurement !== "snapshot") return;
-            const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            const marker = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "circle",
+            );
             marker.setAttribute("cx", points[index].x);
             marker.setAttribute("cy", points[index].y);
             marker.setAttribute("r", "4");
             marker.setAttribute("fill", "white");
             marker.setAttribute("stroke", "currentColor");
-            const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+            const title = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "title",
+            );
             title.textContent = `${observation.count} residents, ${observationDate(observation)}. Source: ${observation.source}`;
             marker.append(title);
             snapshots.append(marker);
           });
           document.getElementById("sparkline-endpoint").style.display =
             last.measurement === "snapshot" ? "none" : "";
-          const hasSnapshots = observations.some((entry) => entry.measurement === "snapshot");
+          const hasSnapshots = observations.some(
+            (entry) => entry.measurement === "snapshot",
+          );
           document.getElementById("sparkline-note").textContent = hasSnapshots
             ? "Weekly averages and dated snapshots (outlined dots). Lines connect available reports; gaps have no reported data."
             : "Weekly average census over the last 26 weeks of available data.";
@@ -695,8 +742,13 @@
 
         function censusHistory(facility) {
           return [
-            ...facility.weekly.map((entry) => ({ ...entry, measurement: "weekly" })),
-            ...supplementalObservations.filter((entry) => entry.facilityCode === facility.code),
+            ...facility.weekly.map((entry) => ({
+              ...entry,
+              measurement: "weekly",
+            })),
+            ...supplementalObservations.filter(
+              (entry) => entry.facilityCode === facility.code,
+            ),
           ].sort((a, b) => a.date.localeCompare(b.date));
         }
 
@@ -721,7 +773,9 @@
             observationDate(entry),
             entry.count.toLocaleString("en-US"),
             changeText,
-            entry.measurement === "snapshot" ? "Dated snapshot" : "Weekly average",
+            entry.measurement === "snapshot"
+              ? "Dated snapshot"
+              : "Weekly average",
           ];
           values.forEach(function (value, index) {
             const cell = document.createElement("td");
@@ -731,7 +785,9 @@
               const source = document.createElement("span");
               source.className = "block text-xs text-gray-500 mt-1";
               let url;
-              try { url = new URL(entry.sourceUrl); } catch (_) {}
+              try {
+                url = new URL(entry.sourceUrl);
+              } catch (_) {}
               if (url && ["http:", "https:"].includes(url.protocol)) {
                 const link = document.createElement("a");
                 link.href = url.href;
@@ -794,9 +850,12 @@
             activeFacility.code === DEFAULT_FACILITY_CODE
               ? `${activeFacility.name} · ${activeFacility.city}`
               : activeFacility.city;
-          document.getElementById("detainee-number").textContent = latest.count.toLocaleString("en-US");
+          document.getElementById("detainee-number").textContent =
+            latest.count.toLocaleString("en-US");
           document.getElementById("latest-count-label").textContent =
-            latest.measurement === "snapshot" ? "Latest Reported Residents" : "Latest Reported Weekly Average Census";
+            latest.measurement === "snapshot"
+              ? "Latest Reported Residents"
+              : "Latest Reported Weekly Average Census";
           renderSource(latest);
           document.getElementById("latest-week").textContent =
             observationDate(latest);
