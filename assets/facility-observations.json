@@ -22,5 +22,13 @@
     "measurement": "snapshot",
     "source": "Site editor report",
     "sourceUrl": null
+  },
+  {
+    "facilityCode": "NRLKCMI",
+    "date": "2026-10-25",
+    "count": 1349,
+    "measurement": "snapshot",
+    "source": "Site editor report",
+    "sourceUrl": null
   }
 ]
