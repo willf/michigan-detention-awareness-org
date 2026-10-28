@@ -1,6 +1,6 @@
 window.MEMORIAL_DATA = {
   "cutoff": "2024-01-01",
-  "source": "detainee_deaths_data-2.csv",
+  "source": "https://detentionmortality.com/detainee_deaths_data.csv",
   "records": [
     {
       "id": "julian-curo-churata",
