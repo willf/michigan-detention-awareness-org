@@ -1,5 +1,5 @@
 window.MEMORIAL_DATA = {
-  cutoff: "2024-01-02",
+  cutoff: "2024-01-01",
   source: "https://detentionmortality.com/detainee_deaths_data.csv",
   records: [
     {
