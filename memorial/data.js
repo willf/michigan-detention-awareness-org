@@ -3,6 +3,36 @@ window.MEMORIAL_DATA = {
   "source": "https://detentionmortality.com/detainee_deaths_data.csv",
   "records": [
     {
+      "id": "roberto-jimenez-gutierrez",
+      "name": "Roberto Jimenez Gutierrez",
+      "nationality": "Guatemala",
+      "age": 43,
+      "dateOfDeath": "2026-10-24",
+      "lastDetentionFacility": "Otay Mesa Detention Center",
+      "deathLocationCity": "San Diego",
+      "deathLocationState": "CA"
+    },
+    {
+      "id": "luis-sandoval",
+      "name": "Luis Sandoval",
+      "nationality": "El Salvador",
+      "age": 48,
+      "dateOfDeath": "2026-10-23",
+      "lastDetentionFacility": "Folkston D. Ray ICE Processing Center",
+      "deathLocationCity": "Folkston",
+      "deathLocationState": "GA"
+    },
+    {
+      "id": "emiliano-andrade-covarrubias",
+      "name": "Emiliano Andrade-Covarrubias",
+      "nationality": "Mexico",
+      "age": 56,
+      "dateOfDeath": "2026-10-17",
+      "lastDetentionFacility": "Rio Grande Processing Center",
+      "deathLocationCity": "Laredo",
+      "deathLocationState": "TX"
+    },
+    {
       "id": "julian-curo-churata",
       "name": "Julian Curo-Churata",
       "nationality": "Peru",
@@ -28,7 +58,7 @@ window.MEMORIAL_DATA = {
       "nationality": "China",
       "age": 51,
       "dateOfDeath": "2026-08-23",
-      "lastDetentionFacility": "Saipan Hold",
+      "lastDetentionFacility": "Northern Mariana Islands Department Of Corrections, Susupe",
       "deathLocationCity": "Saipan",
       "deathLocationState": "MP"
     },
@@ -148,7 +178,7 @@ window.MEMORIAL_DATA = {
       "nationality": "Afghanistan",
       "age": 41,
       "dateOfDeath": "2026-03-14",
-      "lastDetentionFacility": "ERO Dallas Field Office TX",
+      "lastDetentionFacility": "ERO Dallas Field Office",
       "deathLocationCity": "Dallas",
       "deathLocationState": "TX"
     },
@@ -446,7 +476,7 @@ window.MEMORIAL_DATA = {
       "id": "oscar-duarte-rascon",
       "name": "Oscar Duarte Rascon",
       "nationality": "Mexico",
-      "age": 58,
+      "age": 59,
       "dateOfDeath": "2025-09-08",
       "lastDetentionFacility": "Eloy Federal Contract Facility",
       "deathLocationCity": "Phoenix",
@@ -558,7 +588,7 @@ window.MEMORIAL_DATA = {
       "nationality": "Dominican Republic",
       "age": 44,
       "dateOfDeath": "2025-02-23",
-      "lastDetentionFacility": "Not Applicable (Hospitalized Upon Transfer)",
+      "lastDetentionFacility": null,
       "deathLocationCity": "San Juan",
       "deathLocationState": "PR"
     },
@@ -1108,7 +1138,7 @@ window.MEMORIAL_DATA = {
       "nationality": "India",
       "age": 21,
       "dateOfDeath": "2019-05-03",
-      "lastDetentionFacility": "LA Palma Correctional Center AZ",
+      "lastDetentionFacility": "LA Palma Correctional Center",
       "deathLocationCity": "Goodyear",
       "deathLocationState": "AZ"
     },
@@ -1157,7 +1187,7 @@ window.MEMORIAL_DATA = {
       "name": "Augustina RAMIREZ-ARREOLA",
       "nationality": "Mexico",
       "age": 62,
-      "dateOfDeath": "2018-07-26",
+      "dateOfDeath": "2018-07-25",
       "lastDetentionFacility": "Otay Mesa Detention Center CA",
       "deathLocationCity": "San Diego",
       "deathLocationState": "CA"
@@ -1181,6 +1211,16 @@ window.MEMORIAL_DATA = {
       "lastDetentionFacility": "Eloy Federal Contract Facility",
       "deathLocationCity": "Casa Grande",
       "deathLocationState": "AZ"
+    },
+    {
+      "id": "zeresenay-ermias-testfatsion",
+      "name": "Zeresenay Ermias Testfatsion",
+      "nationality": "Eritrea",
+      "age": 34,
+      "dateOfDeath": "2018-06-06",
+      "lastDetentionFacility": null,
+      "deathLocationCity": "Cairo",
+      "deathLocationState": null
     },
     {
       "id": "jeffry-hernandez",
@@ -1211,6 +1251,26 @@ window.MEMORIAL_DATA = {
       "lastDetentionFacility": "Prairieland Detention Center TX",
       "deathLocationCity": "Alvarado",
       "deathLocationState": "TX"
+    },
+    {
+      "id": "luis-ramirez-marcano",
+      "name": "Luis Ramirez-Marcano",
+      "nationality": "Cuba",
+      "age": 59,
+      "dateOfDeath": "2018-02-19",
+      "lastDetentionFacility": "Krome Service Processing Center",
+      "deathLocationCity": "Miami",
+      "deathLocationState": "FL"
+    },
+    {
+      "id": "yulio-castro-garrido",
+      "name": "Yulio Castro-Garrido",
+      "nationality": "Cuba",
+      "age": 33,
+      "dateOfDeath": "2018-01-30",
+      "lastDetentionFacility": "Stewart Detention Center",
+      "deathLocationCity": "Jacksonville",
+      "deathLocationState": "FL"
     },
     {
       "id": "kamyar-samimi",
