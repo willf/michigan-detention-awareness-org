@@ -58,11 +58,7 @@ window.MEMORIAL_DATA = {
       "nationality": "China",
       "age": 51,
       "dateOfDeath": "2026-08-23",
-<<<<<<< HEAD
       "lastDetentionFacility": "Northern Mariana Islands Department Of Corrections, Susupe",
-=======
-      "lastDetentionFacility": "Saipan Hold",
->>>>>>> bd0c0e603f0c1bad5b01def60b94f2ea489979e9
       "deathLocationCity": "Saipan",
       "deathLocationState": "MP"
     },
@@ -182,11 +178,7 @@ window.MEMORIAL_DATA = {
       "nationality": "Afghanistan",
       "age": 41,
       "dateOfDeath": "2026-03-14",
-<<<<<<< HEAD
       "lastDetentionFacility": "ERO Dallas Field Office",
-=======
-      "lastDetentionFacility": "ERO Dallas Field Office TX",
->>>>>>> bd0c0e603f0c1bad5b01def60b94f2ea489979e9
       "deathLocationCity": "Dallas",
       "deathLocationState": "TX"
     },
@@ -484,11 +476,7 @@ window.MEMORIAL_DATA = {
       "id": "oscar-duarte-rascon",
       "name": "Oscar Duarte Rascon",
       "nationality": "Mexico",
-<<<<<<< HEAD
       "age": 59,
-=======
-      "age": 58,
->>>>>>> bd0c0e603f0c1bad5b01def60b94f2ea489979e9
       "dateOfDeath": "2025-09-08",
       "lastDetentionFacility": "Eloy Federal Contract Facility",
       "deathLocationCity": "Phoenix",
@@ -600,11 +588,7 @@ window.MEMORIAL_DATA = {
       "nationality": "Dominican Republic",
       "age": 44,
       "dateOfDeath": "2025-02-23",
-<<<<<<< HEAD
       "lastDetentionFacility": null,
-=======
-      "lastDetentionFacility": "Not Applicable (Hospitalized Upon Transfer)",
->>>>>>> bd0c0e603f0c1bad5b01def60b94f2ea489979e9
       "deathLocationCity": "San Juan",
       "deathLocationState": "PR"
     },
@@ -1154,11 +1138,7 @@ window.MEMORIAL_DATA = {
       "nationality": "India",
       "age": 21,
       "dateOfDeath": "2019-05-03",
-<<<<<<< HEAD
       "lastDetentionFacility": "LA Palma Correctional Center",
-=======
-      "lastDetentionFacility": "LA Palma Correctional Center AZ",
->>>>>>> bd0c0e603f0c1bad5b01def60b94f2ea489979e9
       "deathLocationCity": "Goodyear",
       "deathLocationState": "AZ"
     },
@@ -1207,11 +1187,7 @@ window.MEMORIAL_DATA = {
       "name": "Augustina RAMIREZ-ARREOLA",
       "nationality": "Mexico",
       "age": 62,
-<<<<<<< HEAD
       "dateOfDeath": "2018-07-25",
-=======
-      "dateOfDeath": "2018-07-26",
->>>>>>> bd0c0e603f0c1bad5b01def60b94f2ea489979e9
       "lastDetentionFacility": "Otay Mesa Detention Center CA",
       "deathLocationCity": "San Diego",
       "deathLocationState": "CA"
@@ -1237,7 +1213,6 @@ window.MEMORIAL_DATA = {
       "deathLocationState": "AZ"
     },
     {
-<<<<<<< HEAD
       "id": "zeresenay-ermias-testfatsion",
       "name": "Zeresenay Ermias Testfatsion",
       "nationality": "Eritrea",
@@ -1248,8 +1223,6 @@ window.MEMORIAL_DATA = {
       "deathLocationState": null
     },
     {
-=======
->>>>>>> bd0c0e603f0c1bad5b01def60b94f2ea489979e9
       "id": "jeffry-hernandez",
       "name": "Jeffry Hernandez",
       "nationality": "Honduras",
@@ -1280,7 +1253,6 @@ window.MEMORIAL_DATA = {
       "deathLocationState": "TX"
     },
     {
-<<<<<<< HEAD
       "id": "luis-ramirez-marcano",
       "name": "Luis Ramirez-Marcano",
       "nationality": "Cuba",
@@ -1301,8 +1273,6 @@ window.MEMORIAL_DATA = {
       "deathLocationState": "FL"
     },
     {
-=======
->>>>>>> bd0c0e603f0c1bad5b01def60b94f2ea489979e9
       "id": "kamyar-samimi",
       "name": "Kamyar Samimi",
       "nationality": "Iran",
