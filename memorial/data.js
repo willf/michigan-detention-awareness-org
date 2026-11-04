@@ -3,6 +3,16 @@ window.MEMORIAL_DATA = {
   "source": "https://detentionmortality.com/detainee_deaths_data.csv",
   "records": [
     {
+      "id": "fran-gregory-portillo-zapata",
+      "name": "Fran Gregory Portillo-Zapata",
+      "nationality": "Venezuela",
+      "age": 53,
+      "dateOfDeath": "2026-10-29",
+      "lastDetentionFacility": "Karnes County Immigration Processing Center",
+      "deathLocationCity": "San Antonio",
+      "deathLocationState": "TX"
+    },
+    {
       "id": "roberto-jimenez-gutierrez",
       "name": "Roberto Jimenez Gutierrez",
       "nationality": "Guatemala",
@@ -383,16 +393,6 @@ window.MEMORIAL_DATA = {
       "deathLocationState": "CA"
     },
     {
-      "id": "jose-castro-rivera",
-      "name": "Jose Castro Rivera",
-      "nationality": "Honduras",
-      "age": 25,
-      "dateOfDeath": "2025-10-23",
-      "lastDetentionFacility": "Not Applicable (Incident Occurred During Arrest/Escape)",
-      "deathLocationCity": "Norfolk",
-      "deathLocationState": "VA"
-    },
-    {
       "id": "hasan-ali-moh-d-saleh",
       "name": "Hasan Ali Moh'd Saleh",
       "nationality": "Jordan",
@@ -461,16 +461,6 @@ window.MEMORIAL_DATA = {
       "lastDetentionFacility": "Nassau County Correctional Center NY",
       "deathLocationCity": "East Meadow",
       "deathLocationState": "NY"
-    },
-    {
-      "id": "silverio-villegas-gonzalez",
-      "name": "Silverio Villegas Gonzalez",
-      "nationality": "Mexico",
-      "age": 38,
-      "dateOfDeath": "2025-09-12",
-      "lastDetentionFacility": null,
-      "deathLocationCity": "Maywood",
-      "deathLocationState": "IL"
     },
     {
       "id": "oscar-duarte-rascon",
