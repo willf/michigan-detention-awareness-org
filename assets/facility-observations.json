@@ -1,6 +1,14 @@
 [
   {
     "facilityCode": "NRLKCMI",
+    "date": "2026-11-08",
+    "count": 1446,
+    "measurement": "snapshot",
+    "source": "Site editor report",
+    "sourceUrl": null
+  },
+  {
+    "facilityCode": "NRLKCMI",
     "date": "2026-11-03",
     "count": 1487,
     "measurement": "snapshot",
